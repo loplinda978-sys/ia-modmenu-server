@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // Usará o modelo da Render ou o Hermes 3 Uncensored por padrão
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "nousresearch/hermes-3-llama-3-8b";
+const nousresearch/hermes-3-llama-3-8b:free = process.env.nousresearch/hermes-3-llama-3-8b:free || "nousresearch/hermes-3-llama-3-8b";
 const tasks = new Map();
 
 app.use(cors({ origin: "*" }));
@@ -68,7 +68,7 @@ app.get("/api/tasks/:id/events", async (req, res) => {
         "X-Title": "CollinsIA"
       },
       body: JSON.stringify({
-        model: OPENROUTER_MODEL,
+        model: nousresearch/hermes-3-llama-3-8b:free,
         messages: [
           {
             role: "system",
