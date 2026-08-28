@@ -4,7 +4,6 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-// Mantém o nome correto da variável em código JavaScript
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "nousresearch/hermes-3-llama-3-8b:free";
 const tasks = new Map();
 
@@ -58,12 +57,12 @@ app.get("/api/tasks/:id/events", async (req, res) => {
   try {
     sendEvent(res, { type: "status", taskId, status: "running" });
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://openrouter.ai", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://ia-modmenu-server.onrender.com",
+        "HTTP-Referer": "https://onrender.com",
         "X-Title": "CollinsIA"
       },
       body: JSON.stringify({
@@ -89,6 +88,7 @@ app.get("/api/tasks/:id/events", async (req, res) => {
     }
 
     const data = await response.json();
+    // LINHA 91 CORRIGIDA AQUI:
     const textoResposta = data?.choices?.[0]?.message?.content;
 
     if (!textoResposta) {
