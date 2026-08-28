@@ -17,7 +17,7 @@ function sendEvent(res, payload) {
 app.post("/api/tasks", (req, res) => {
   const prompt = String(req.body?.prompt || req.body?.message || "").trim();
 
-  if (!prompt) {
+  if (!prompt) g
     return res.status(400).json({ error: "Envie um prompt ou message." });
   }
 
