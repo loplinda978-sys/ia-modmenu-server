@@ -5,20 +5,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const OPENROUTER_API_KEY = "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";
+// Padrão de segurança: puxa a chave direto das configurações do Render
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const MODELO_SEM_FILTROS = "venice/uncensored:free"; 
 
-// 1. ENDPOINT DE CRIAÇÃO (O que a interface do Manus chama primeiro)
+// 1. ENDPOINT DE CRIAÇÃO (Padrão Manus)
 app.post('/api/tasks', (req, res) => {
     const uniqueId = "task_" + Math.random().toString(36).substr(2, 9);
-    // Armazena temporariamente o prompt recebido no corpo da requisição do Manus
-    app.set(uniqueId, req.body.prompt || req.body.message);
+    app.set(uniqueId, req.body.prompt || req.body.message || "Nova tarefa");
     
-    // Retorna exatamente a estrutura esperada pelo frontend do Manus
-    res.json({ id: uniqueId, status: "running", title: "Análise de Dump / ModMenu" });
+    res.status(202).json({ 
+        id: uniqueId, 
+        status: "queued", 
+        title: req.body.prompt || req.body.message || "Nova tarefa" 
+    });
 });
 
-// 2. ENDPOINT DE STREAMING (O que faz o texto aparecer digitando na tela do Manus)
+// 2. ENDPOINT DE STREAMING (Padrão Manus com rota corrigida)
 app.get('/api/tasks/:id/events', async (req, res) => {
     const taskId = req.params.id;
     const promptUsuario = app.get(taskId) || "Criar estrutura básica de mod menu";
@@ -44,11 +47,11 @@ app.get('/api/tasks/:id/events', async (req, res) => {
         });
 
         const data = await response.json();
-        const textoResposta = data.choices[0].message.content;
+        const textoResposta = data.choices.message.content;
 
-        // Envia o token de texto no padrão exato SSE estruturado pelo Manus
+        res.write(`data: ${JSON.stringify({ type: "status", taskId: taskId, status: "running" })}\n\n`);
         res.write(`data: ${JSON.stringify({ type: "token", taskId: taskId, text: textoResposta })}\n\n`);
-        // Avisa a interface que o processamento terminou com sucesso
+        res.write(`data: ${JSON.stringify({ type: "status", taskId: taskId, status: "done" })}\n\n`);
         res.write(`data: ${JSON.stringify({ type: "done", taskId: taskId })}\n\n`);
     } catch (error) {
         res.write(`data: ${JSON.stringify({ type: "error", error: "Erro ao consultar a API de IA" })}\n\n`);
@@ -56,17 +59,10 @@ app.get('/api/tasks/:id/events', async (req, res) => {
     res.end();
 });
 
-// Rota simples apenas para o sistema de ping testar se o site está online
-app.get('/ping', (req, res) => {
-    res.send("Acordado!");
-});
+app.get('/ping', (req, res) => { res.send("Acordado!"); });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
-    
-    // SISTEMA ANTI-SONO: Dispara uma requisição local a cada 10 minutos para manter estável
-    setInterval(() => {
-        fetch(`http://localhost:${PORT}/ping`).catch(() => {});
-    }, 600000);
+    setInterval(() => { fetch(`http://localhost:${PORT}/ping`).catch(() => {}); }, 600000);
 });
