@@ -8,7 +8,7 @@ const DEFAULT_MODEL = "nousresearch/hermes-3-llama-3-8b:free";
 const tasks = new Map();
 
 app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS"] }));
-app.use(express.json({ limit: "100mb" }));
+app.use(express.json({ limit: "1000mb" }));
 
 function sendEvent(res, payload) {
   res.write(`data: ${JSON.stringify(payload)}\\n\\n`);
