@@ -6,7 +6,7 @@ app.use(cors());
 app.use(express.json());
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const MODELO_SEM_FILTROS = "venice/uncensored:free"; 
+const MODELO_SEM_FILTROS = "openrouter/free";
 
 app.post('/api/tasks', (req, res) => {
     const uniqueId = "task_" + Math.random().toString(36).substr(2, 9);
