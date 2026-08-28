@@ -5,11 +5,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Padrão de segurança: puxa a chave direto das configurações do Render
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const MODELO_SEM_FILTROS = "venice/uncensored:free"; 
 
-// 1. ENDPOINT DE CRIAÇÃO (Padrão Manus)
 app.post('/api/tasks', (req, res) => {
     const uniqueId = "task_" + Math.random().toString(36).substr(2, 9);
     app.set(uniqueId, req.body.prompt || req.body.message || "Nova tarefa");
@@ -21,7 +19,6 @@ app.post('/api/tasks', (req, res) => {
     });
 });
 
-// 2. ENDPOINT DE STREAMING (Padrão Manus com rota corrigida)
 app.get('/api/tasks/:id/events', async (req, res) => {
     const taskId = req.params.id;
     const promptUsuario = app.get(taskId) || "Criar estrutura básica de mod menu";
@@ -46,15 +43,25 @@ app.get('/api/tasks/:id/events', async (req, res) => {
             })
         });
 
+        // Se o OpenRouter recusar, captura o erro real da resposta deles
+        if (!response.ok) {
+            const erroTexto = await response.text();
+            console.error("[Erro OpenRouter]:", response.status, erroTexto);
+            res.write(`data: ${JSON.stringify({ type: "error", error: `OpenRouter HTTP ${response.status}: ${erroTexto}` })}\n\n`);
+            res.end();
+            return;
+        }
+
         const data = await response.json();
-        const textoResposta = data.choices.message.content;
+        const textoResposta = data.choices[0].message.content;
 
         res.write(`data: ${JSON.stringify({ type: "status", taskId: taskId, status: "running" })}\n\n`);
         res.write(`data: ${JSON.stringify({ type: "token", taskId: taskId, text: textoResposta })}\n\n`);
         res.write(`data: ${JSON.stringify({ type: "status", taskId: taskId, status: "done" })}\n\n`);
         res.write(`data: ${JSON.stringify({ type: "done", taskId: taskId })}\n\n`);
     } catch (error) {
-        res.write(`data: ${JSON.stringify({ type: "error", error: "Erro ao consultar a API de IA" })}\n\n`);
+        console.error("[Erro Servidor Interno]:", error.message);
+        res.write(`data: ${JSON.stringify({ type: "error", error: `Erro interno: ${error.message}` })}\n\n`);
     }
     res.end();
 });
