@@ -32,7 +32,7 @@ app.get('/api/tasks/:id/events', async (req, res) => {
 
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${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}`,
+                "Authorization": `Bearer ${COLE AQ}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
