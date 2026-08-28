@@ -4,7 +4,7 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const MODELO = process.env.OPENROUTER_MODEL || "venice/uncensored:free";
+const MODELO_SEM_FILTROS = "venice/uncensored:free";
 const tasks = new Map();
 
 app.use(cors({ origin: "*" }));
