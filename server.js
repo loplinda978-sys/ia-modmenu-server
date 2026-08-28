@@ -62,7 +62,7 @@ app.get("/api/tasks/:id/events", async (req, res) => {
         "X-Title": "CollinsIA"
       },
       body: JSON.stringify({
-        model: MODELO,
+        const MODELO_SEM_FILTROS = "openrouter/free";
         messages: [
           {
             role: "system",
