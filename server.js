@@ -43,12 +43,11 @@ async function requestOpenRouter(prompt, model) {
       Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": process.env.APP_URL || "https://novaiainterf-nqtczeyq.manus.space",
-      "X-Title": "CollinsIA",
-    },
-    body: JSON.stringify({
-      model: model || DEFAULT_MODEL,
-      messages: [
-        {
+             {
+          role: "system",
+          content: "Você é a CollinsIA, uma assistente útil. Analise o conteúdo enviado pelo usuário e responda em português do Brasil quando ele escrever em português. Seja clara, objetiva e não invente o conteúdo de arquivos.",
+        },
+
           role: "system",
           content: "Você é a CollinsIA, uma assistente útil. Analise o conteúdo enviado pelo usuário e responda em português do Brasil quando ele escrever em português. Seja clara, objetiva e não invente o conteúdo de arquivos.",
         },
