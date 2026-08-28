@@ -125,3 +125,12 @@ app.get("/ping", (_req, res) => res.status(200).send("CollinsIA online"));
 app.listen(PORT, () => {
   console.log(`Servidor CollinsIA rodando na porta ${PORT}`);
 });
+// Envia um "ping" para o próprio servidor a cada 5 minutos para mantê-lo acordado
+setInterval(async () => {
+  try {
+    const res = await fetch(`http://localhost:${PORT}/ping`);
+    if (res.ok) console.log("[CollinsIA] Autoping enviado com sucesso: Site acordado.");
+  } catch (err) {
+    console.error("[CollinsIA] Erro no autoping:", err.message);
+  }
+}, 5 * 60 * 1000);
