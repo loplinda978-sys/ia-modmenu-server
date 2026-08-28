@@ -28,10 +28,11 @@ app.get('/api/tasks/:id/events', async (req, res) => {
     res.setHeader('Connection', 'keep-alive');
 
     try {
-        const response = await fetch("https://openrouter.ai", {
+        fetch("https://openrouter.ai/api/v1/chat/completions", {
+
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                "Authorization": `Bearer ${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}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
